@@ -1,0 +1,139 @@
+alter PROCEDURE  [dbo].[spICS_FGBOMSFG]
+ @PPCQTY Decimal(20,9),@iDate bigint=0,@iSFGStkChK smallint=0,@WHId bigint=0,@iPSFGID bigint=0,@iSFGID bigint=0,@iFGProductId bigint=0,@iLevel bigint=0,@rowno bigint=1,@loggeduser varchar(50)='SU'
+ AS
+ BEGIN
+ -- exec spICS_FGBOMSFG 1000.0000000000,132580112,0,13,10,10,10,0,1,'SU'
+ -- create table TableCollect_FGBOMSFG(id bigint primary key identity(1,1),Row bigint default 0,ParentId bigint default 0,FgId bigint default 0,VariantId bigint default 0, SfgId bigint default 0, BOMQuantity decimal(18,2)  default 0,PlanQty decimal(18,2)  default 0,Stock decimal(18,2) default 0, SFGPReq decimal(18,2)  default 0,PrvReq decimal(18,2)  default 0,vSTK decimal(18,2) default 0,Q2P decimal(18,2) default 0,level int default 0,[User] varchar(200))
+ --Declare @PPCQTY Decimal(20,9)=10000.0000000000;
+ --declare @iDate int=132580112;
+ --Declare @iSFGStkChK smallint=1;
+ --Declare @iPSFGID bigint=624;
+ --Declare @iSFGID bigint=624;
+ --declare @iFGProductId bigint=624;
+ --declare @iLevel bigint=0;
+ --declare @rowno bigint=0;
+ 
+
+ 
+ --declare @loggeduser varchar(50)='SU';
+ --Select * from TableCollect_FGBOMSFG
+ SET NOCOUNT off   
+ --Delete  from TableCollect_FGBOMSFG where [User]=@loggeduser
+ -- DBCC CHECKIDENT ('[TableCollect_FGBOMSFG]', RESEED,0)
+ Declare @varientId bigint  
+ declare @BOMSize DECIMAL(20,9)
+ declare @PrevReq DECIMAL(20,9)
+ 
+ select @varientId=isnull(iVariantId,0) from ICS_BOMVariant where iProductId=@iSFGID
+ --Select @varientId
+ select @BOMSize=isnull(fQty,0) from mMrp_BOMBody where iVariantId=@varientId and bInput=0 and bMainOutPut=1
+ --Select @BOMSize
+ 
+DECLARE @TVar TABLE(id bigint primary key identity(1,1),RowCnt bigint default 0,ParentId bigint default 0,FgId bigint default 0,VariantId bigint default 0, SfgId bigint default 0, BOMQuantity decimal(18,2)  default 0,PlanQty decimal(18,2)  default 0,Stock decimal(18,2) default 0, SFGPReq decimal(18,2)  default 0,PrvReq decimal(18,2)  default 0,vSTK decimal(18,2) default 0,Q2P decimal(18,2) default 0,level int default 0)
+if (@iSFGID=@iFGProductId)
+begin
+	insert into @TVar(RowCnt,ParentId,FgId,VariantId,SfgId,BOMQuantity,PlanQty,[level])
+	values (@rowno,@iPSFGID,@iFGProductId,@varientId,@iSFGID ,@BOMSize,@PPCQTY,@iLevel)
+	
+end	
+
+ insert into @TVar(RowCnt,ParentId,FgId,VariantId,SfgId,PlanQty, BOMQuantity,Stock,[level])
+ Select @rowno+1,@iPSFGID,@iFGProductId,isnull((select top 1 iVariantId from vCore_BOMVariant where iProductId=vmCore_Product.iMasterId),0),
+                                    vmCore_Product.iMasterId iProductId,
+									
+									  CAST(fQty*@BOMSize AS DECIMAL(20,8))*@PPCQTY,
+									  CAST(fQty/@BOMSize AS DECIMAL(20,8)),
+									  case when @WHID = 0 then  
+										isnull((select isnull(sum(fQiss+fQrec),0) from vCore_ibals_0 where iProduct=mMrp_BOMBody.iProductId and iDate<=@iDate and iInvTag not in (Select iMasterId  from muCore_Warehouse where ISMRPWH!=0)),0)
+									  else 
+										isnull((select isnull(sum(fQiss+fQrec),0) from vCore_ibals_0 where iProduct=mMrp_BOMBody.iProductId and iDate<=@iDate and iInvTag=@WHId),0)
+									  end  
+                                    ,@iLevel+1 iLevel
+                                    FROM mMrp_BOMBody                 
+                                    join vmCore_Product ON vmCore_Product.iMasterId= mMrp_BOMBody.iProductId And vmCore_Product.iTreeId = 0
+                                    join vmCore_Units on vmCore_Units.iMasterId=mMrp_BOMBody.iUnit     
+                                    where mMrp_BOMBody.iVariantId = @varientId And bInput = 1 
+									And isnull((select top 1 iVariantId from vCore_BOMVariant where iProductId=vmCore_Product.iMasterId),0) <> 0
+									order by mMrp_BOMBody.iVariantId, isnull( mMrp_BOMBody.iRowIndex,0)
+				
+				Declare @BDProductId bigint,@BDPProductId bigint, @BDIsBom int,@BDSalQty decimal(20,9),@BDCnt Bigint = 1,@BDMaxCnt bigint,@BDId Bigint
+				Select @BDCnt= Min(id), @BDMaxCnt = Max(id) FROM @TVar AS BD 
+			
+				WHILE (@BDCnt <= @BDMaxCnt)
+	            BEGIN
+					set @BDProductId = 0	
+					 Select @BDId=BD.ID,@BDPProductId=BD.SfgId,@BDProductId=BD.SfgId,@BDIsBom=bd.VariantId,@BDSalQty=PlanQty FROM @TVar AS BD where id=@BDCnt and level!=0
+					 if (@BDIsBom != 0)
+					 begin
+						set @iLevel =  @iLevel + 1; 	
+						set @rowno = @rowno + 1;
+						exec spICS_FGBOMSFG @BDSalQty,@iDate,@iSFGStkChK,@WHId,@BDPProductId,@BDProductId,@iFGProductId,@iLevel,@rowno
+			--			--print @BDProductId
+					 end 
+					 SET @BDCnt = @BDCnt + 1
+					 
+	         END
+
+		select * from @TVar
+	
+
+    update  @TVar set SFGPReq = BOMQuantity * PlanQty 
+    insert into TableCollect_FGBOMSFG ([Row],ParentId, FgId,VariantId,SfgId,BOMQuantity,PlanQty,Stock,SFGPReq,PrvReq,vSTK,Q2P,[level],[User]) 
+		Select RowCnt,ParentId, FgId,VariantId,SfgId,BOMQuantity,PlanQty,Stock,SFGPReq,PrvReq,vSTK,Q2P,[level],@loggeduser from @TVar 	
+
+	----- PlanQty Update
+
+	if (@iSFGStkChK = 1)
+	Begin 
+
+		declare @Tid int
+		declare @TSfgId int 
+		declare @TCnt int 
+		DECLARE @i INT = 1;
+		WHILE @i <= 30
+		BEGIN
+			update TableCollect_FGBOMSFG   set TableCollect_FGBOMSFG.planQty = isnull((select bb.q2p from TableCollect_FGBOMSFG as bb where bb.SFGid = TableCollect_FGBOMSFG.parentid and bb.FGID=TableCollect_FGBOMSFG.FGID),0)
+		where TableCollect_FGBOMSFG.SFgid <> TableCollect_FGBOMSFG.FgID
+		
+
+		update  TableCollect_FGBOMSFG set SFGPReq = isnull(BOMQuantity * PlanQty,0) 
+	
+		DECLARE gSFGPReq CURSOR
+		LOCAL FORWARD_ONLY FOR
+		SELECT id,SfgId FROM TableCollect_FGBOMSFG;
+		OPEN gSFGPReq;
+		FETCH NEXT FROM gSFGPReq INTO @Tid, @TSfgId;
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+			Select @TCnt=isnull(sum(SFGPREQ),0) from TableCollect_FGBOMSFG where id<@TID and SfgId=@TSfgId
+			update TableCollect_FGBOMSFG set PrvReq = @TCnt where  id=@TID and SfgId=@TSfgId
+			FETCH NEXT FROM gSFGPReq INTO @Tid, @TSfgId;
+		END;
+		CLOSE gSFGPReq;
+		DEALLOCATE gSFGPReq;
+
+
+		update TableCollect_FGBOMSFG set vSTK = isnull(case when stock -PrvReq < 0 then 0 else stock -PrvReq end,0)
+
+		update TableCollect_FGBOMSFG set Q2P = isnull(case when @iSFGStkChK = 1 then  case when SFGPReq - vSTK < 0 then 0 else SFGPReq - vSTK end else SFGPReq end,0) 
+		--select * from TableCollect_FGBOMSFG
+	
+		update TableCollect_FGBOMSFG   set TableCollect_FGBOMSFG.planQty = isnull((select bb.q2p from TableCollect_FGBOMSFG as bb where bb.SFGid = TableCollect_FGBOMSFG.parentid and bb.FGID=TableCollect_FGBOMSFG.FGID),0)
+		where TableCollect_FGBOMSFG.SFgid <> TableCollect_FGBOMSFG.FgID
+    
+		update  TableCollect_FGBOMSFG set SFGPReq = isnull(BOMQuantity * PlanQty,0) 
+
+		SET @i = @i + 10;
+		END;
+	end 
+	if (@iSFGStkChK = 0) 
+	Begin 
+			update TableCollect_FGBOMSFG   set TableCollect_FGBOMSFG.Q2P = BOMQuantity* PlanQty where level=0
+			update TableCollect_FGBOMSFG   set TableCollect_FGBOMSFG.planQty = isnull((select bb.q2p from TableCollect_FGBOMSFG as bb where bb.SFGid = TableCollect_FGBOMSFG.parentid and bb.FGID=TableCollect_FGBOMSFG.FGID),0)
+			where TableCollect_FGBOMSFG.SFgid <> TableCollect_FGBOMSFG.FgID
+
+			update TableCollect_FGBOMSFG set Q2P = SFGPReq where level !=0 
+			update TableCollect_FGBOMSFG   set TableCollect_FGBOMSFG.planQty = isnull((select bb.q2p from TableCollect_FGBOMSFG as bb where bb.SFGid = TableCollect_FGBOMSFG.parentid and bb.FGID=TableCollect_FGBOMSFG.FGID),0)
+			where TableCollect_FGBOMSFG.SFgid <> TableCollect_FGBOMSFG.FgID	    
+	end 
+end 

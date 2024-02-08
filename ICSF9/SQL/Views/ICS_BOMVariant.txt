@@ -1,0 +1,20 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- Created By Shaikh Azhar 
+-- Created Dated 22-01-2023
+-- Last Company Bhogale 
+
+-- Modifed By Shaikh Azhar 
+-- Modified Dated :- 27-02-2023  
+-- Current Company Viday group
+
+create view [dbo].[ICS_BOMVariant] as 
+SELECT     BH.sName AS BOMName, BVH.iVariantId, CASE WHEN BVH.sName = 'Default' THEN BH.sName ELSE BVH.sName END AS sName, BB.iProductId, BB.iUnit, BH.iVersion, ISNULL(BH.iTagId, 0) AS iTagId, ISNULL(BH.iTagValue, 0) AS iTagValue
+FROM        dbo.mMRP_BomVariantHeader AS BVH INNER JOIN
+                  dbo.mMRP_BomHeader AS BH ON BH.iBomId = BVH.iBomId INNER JOIN
+                  dbo.mMRP_BOMBody AS BB ON BB.iVariantId = BVH.iVariantId AND BB.bInput = 0 AND BB.bMainOutPut = 1 AND BVH.iStatus < 5 AND BH.iStatus < 5
+GO
