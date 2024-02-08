@@ -1,0 +1,17 @@
+ICSF9/ICSF9/App_Data/**
+ICSF9/ICSF9/App_Start/**
+ICSF9/ICSF9/bin/**
+ICSF9/ICSF9/Content/**
+ICSF9/Docs/**
+ICSF9/packages/**
+ICSF9/ICSF9/fonts/**
+ICSF9/ICSF9/obj/**
+ICSF9/ICSF9/Properties/**
+ICSF9/ICSF9/favicon.ico
+ICSF9/ICSF9/Global.asax
+ICSF9/ICSF9/Global.asax.cs
+ICSF9/ICSF9/Project_Readme.html
+ICSF9/ICSF9/ReadMe.txt
+ICSF9/ICSF9/Startup.cs
+ICSF9/ICSF9/favicon.ico
+Release Build/**
