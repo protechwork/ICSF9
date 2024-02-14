@@ -162,7 +162,7 @@ namespace ICSF9.Controllers
                                     }
                                     ////Body Screen Fields
                                     strQry = "";
-                                    strQry = $@"select fieldname, postfieldname from ics_abbrmapping where (abbr_id =" + AbbrId + ") and(postposition = 3)";
+                                    strQry = $@"select fieldname, postfieldname, ColMap from ics_abbrmapping where (abbr_id =" + AbbrId + ") and(postposition = 3)";
                                     DataSet ds4 = DataAcesslayer.GetData(strQry, CompanyId, ref strErrorMessage);
 
                                     if (ds4 != null)
@@ -171,15 +171,17 @@ namespace ICSF9.Controllers
                                         {
                                             GetField = "";
                                             PostField = "";
+                                            string postcolMap = "";
                                             GetField = Convert.ToString(ds4.Tables[0].Rows[n][0]);
                                             PostField = Convert.ToString(ds4.Tables[0].Rows[n][1]);
+                                            postcolMap = Convert.ToString(ds4.Tables[0].Rows[n][2]);
                                             //bodyCBROD.Add(PostField, extHeader[GetField]);
                                             // tt = "body" + postfield;
                                             Hashtable tt = new Hashtable
                                         {
                                             {"input",Convert.ToDecimal( extHeader[GetField])},
                                             {"fieldname", PostField},
-                                            {"colmap", n},
+                                            {"colmap", postcolMap},
                                             {"value",Convert.ToDecimal( extHeader[GetField])}
 
                                         };
