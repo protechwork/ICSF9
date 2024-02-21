@@ -178,7 +178,10 @@ namespace ICSF9.Controllers
 
                                     List<System.Collections.Hashtable> lstBody_RptPro = new List<System.Collections.Hashtable>();
                                     lstBody_RptPro.Clear();
-                                    strQry = $@"Select iBomBodyId, iSize, iProductId,(fqty/isize)  *I2PPrdnQty ,fQty, bInput, bMainOutPut, iRowIndex, iInvTagValue,iRate,I2PPrdnQty,[R4PValue],[R4PGross] from tblI2PR2P where UserName='" + User + "' and LoginId=" + LoginId + " and iVariantId=" + iVariantID + " Order by iRowIndex ";
+                                    //
+                                    //strQry = $@"Select iBomBodyId, iSize, iProductId,(fqty/isize)  *I2PPrdnQty ,fQty, bInput, bMainOutPut, iRowIndex, iInvTagValue,iRate,I2PPrdnQty,[R4PValue],[R4PGross] from tblI2PR2P where UserName='" + User + "' and LoginId=" + LoginId + " and iVariantId=" + iVariantID + " Order by iRowIndex ";
+                                    //Changes Done By Rizwan ARB Majid Sir 21-02-2024
+                                    strQry = $@"Select iBomBodyId, iSize, iProductId,((fqty/isize)  * I2PPrdnQty)/(Select fQty from tblI2PR2P where bMainOutPut=1 and [UserName] ='" + User + "' and LoginId=" + LoginId + " and iVariantId=" + iVariantID + ") ,fQty, bInput, bMainOutPut, iRowIndex, iInvTagValue,iRate,I2PPrdnQty,[R4PValue],[R4PGross] from tblI2PR2P where UserName='" + User + "' and LoginId=" + LoginId + " and iVariantId=" + iVariantID + " Order by iRowIndex ";
                                     DataSet ds22 = DataAcesslayer.GetData(strQry, CompanyId, ref strErrorMessage);
                                     clsGeneric.writeLog("Getting from Voucher:" + (ds2));
                                     if (ds22 != null)
