@@ -25,6 +25,7 @@ namespace ICSF9.Controllers
         string sPostDoc = "";
         string sSONo = "";
         int iDeptId = 0;
+        int iBOMVarId = 0;
         #endregion
         public ActionResult UpdateRelPO_POS(int CompanyId, string SessionId, string User, int LoginId, int vtype, string docNo, List<PEBody> BodyData)
         {
@@ -76,7 +77,10 @@ namespace ICSF9.Controllers
                                         HashData objHashRequest = new HashData();
                                         //iDate = Convert.ToInt32(extHeader["Date"]);
                                         sPostDoc = extBody[i]["ProdnOrderNo"].ToString();
-                                        sSONo = extBody[i]["FGPlanNo"].ToString();
+                                        //sSONo = extBody[i]["FGPlanNo"].ToString();
+                                        //New Add By Rizwan ARB Majid Sir 22-02-2024
+                                        iBOMVarId = 0;
+                                        iBOMVarId = Convert.ToInt32(extBody[i]["BOMVarId"]);
                                         headerRelProdOrd.Add("productionorderno", sPostDoc);
                                         headerRelProdOrd.Add("Date", clsGeneric.GetIntToDate(Convert.ToInt32(extHeader["Date"])).ToString());
                                         headerRelProdOrd.Add("sNarration", extHeader["sNarration"]);
@@ -118,9 +122,20 @@ namespace ICSF9.Controllers
                                                 FailedProdOrdCnt = 0;
                                                 strErrorMessage = "";
                                                 strErrorMessage = "";
-                                                strQry = $@"update tMrp_ProdOrder_0  set iTagFilterId=3,sSONO='" + sSONo  + "', iTagFilterValue=" + iDeptId + ",iOrderStatus=2 where sProdOrderNo='" + sPostDoc + "'";
-                                                DataAcesslayer.GetExecute(strQry, CompanyId, ref strErrorMessage);
+                                                //ARB Majid
+                                                //strQry = $@"update tMrp_ProdOrder_0  set iTagFilterId=3,sSONO='" + sSONo  + "', iTagFilterValue=" + iDeptId + ",iOrderStatus=2 where sProdOrderNo='" + sPostDoc + "'";
+                                                //New AddBy Rizwan ARB MAjid Sir if BOM Variant Id Blank
+                                                strQry = "";
+                                                if (iBOMVarId == 0)
+                                                {
+                                                    strQry = $@"update tMrp_ProdOrder_0  set iTagFilterId=3,iTagFilterValue=" + iDeptId + ",iOrderStatus=2 where sProdOrderNo='" + sPostDoc + "'";
+                                                }
+                                                else
+                                                {
+                                                    strQry = $@"update tMrp_ProdOrder_0  set iTagFilterId=3, iVaraintId=" + iBOMVarId + ",iTagFilterValue=" + iDeptId + ",iOrderStatus=2 where sProdOrderNo='" + sPostDoc + "'";
+                                                }
 
+                                                DataAcesslayer.GetExecute(strQry, CompanyId, ref strErrorMessage);
                                                 strQry = $@"update tCore_Data" + vtype + "_0  set ProdOrderStatus=1 where iBodyId=" + iBodyId;
                                                 iBodyId = 0;
                                                 DataAcesslayer.GetExecute(strQry, CompanyId, ref strErrorMessage);

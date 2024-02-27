@@ -34,7 +34,7 @@ namespace ICSF9.Controllers
         string sInvTagMap = "";
         int iBranch__Id = 0;
         int iSFGWarehouse__Id = 0;
-        int iPvtype = 7947;
+        int iPvtype = 7949;
         string sPAbbr = "";
         string sPName = "";
         string sBAbbr = "";

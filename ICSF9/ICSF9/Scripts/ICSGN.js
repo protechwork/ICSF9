@@ -769,7 +769,7 @@ function OldbodyCallbackAfterSaves(response) {
 }
 
 
-//Generalized AfterSave UpdateGRNJWMlt_AnexJWPur_GRNJWSTK Add By Shaikh Azhar 26-03-2023 
+//#region Start of Generalized AfterSave UpdateGRNJWMlt_AnexJWPur_GRNJWSTK Add By Shaikh Azhar 26-03-2023 
 function UpdGRNJWMlt_AnexJWPur_GRNJWSTK(logDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
@@ -856,6 +856,7 @@ function fieldValueCallbackIssueGRNJWMlt_AnexJWPur_GRNJWSTK(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
 
 function Base64ToBytes(base64) {
     var s = window.atob(base64);
@@ -866,7 +867,7 @@ function Base64ToBytes(base64) {
     return bytes;
 };
 
-//CreateDocToProduct Add By Rakesh 18-08-2022 Function
+//#region Start of CreateDocToProduct Add By Rakesh 18-08-2022 Function
 function CreateDocToProduct(loginDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
@@ -930,8 +931,9 @@ function fieldValueCallbackItemGeneralize(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
 
-//CreateDocToAccount Add By Rakesh 21-08-2022 Function
+//#region Start of CreateDocToAccount Add By Rakesh 21-08-2022 Function
 function CreateDocToAccount(loginDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
@@ -995,9 +997,9 @@ function fieldValueCallbackAccountGeneralize(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
 
-
-//Create Dynamic Master Add By Rakesh 14-09-2022 Function
+//#region Start ofCreate Dynamic Master Add By Rakesh 14-09-2022 Function
 function CreateDynamicMaster(loginDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
@@ -1061,11 +1063,9 @@ function fieldValueCallbackDynamicMaster(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
 
-
-
-
-//DocHead2Document Add By Rizwan 18-08-2022 Function
+//#region Start of DocHead2Document Add By Rizwan 18-08-2022 Function
 function DocHead2Document(loginDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
@@ -1124,14 +1124,15 @@ function fieldValueCallbackIssueAfterSaveGRNImp(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
 
-//Generalized AfterSave Master Add By Shaikh Azhar 09-08-2022 
+//#region Start of Generalized AfterSave Master Add By Shaikh Azhar 09-08-2022 
 function GASUpdateMaster(loginDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
     requestId = 0;
     requestsProcessed = [];
-    Focus8WAPI.getFieldValue("fieldValueCallbackIssueGASUpdateMaster", ["DocNo", "Date"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
+    Focus8WAPI.getFieldValue("fieldValueCallbackIssueGASUpdateMaster", ["", "*"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
 
 }
 function fieldValueCallbackIssueGASUpdateMaster(response) {
@@ -1184,9 +1185,9 @@ function fieldValueCallbackIssueGASUpdateMaster(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
 
-
-//Generalized AfterSave I2P_R2P Add By Shaikh Azhar 27-02-2023 
+//#region Start of Generalized AfterSave I2P_R2P Add By Shaikh Azhar 27-02-2023 
 function UpdateI2P_R2P(loginDetails, rowIndex) {
     //alert(loginDetails);	
     debugger;
@@ -1198,7 +1199,7 @@ function UpdateI2P_R2P(loginDetails, rowIndex) {
     LoginId = loginDetails.LoginId;
     //vtyp=logDetails.iVoucherType;
     Focus8WAPI.getFieldValue("fieldValueCallbackIssueI2P_R2P", ["VariantID", "DocNo", "Date"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
-
+    //Focus8WAPI.getFieldValue("fieldValueCallbackIssueI2P_R2P", ["VariantID", "", "*"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
 }
 function fieldValueCallbackIssueI2P_R2P(response) {
     debugger;
@@ -1209,7 +1210,7 @@ function fieldValueCallbackIssueI2P_R2P(response) {
         }
         requestsProcessed.push(response.iRequestId);
         debugger;
-        logDetails = response.data[0];
+        //logDetails = response.data[0];
         VariantID = response.data[0].FieldValue;
         docNo = response.data[1].FieldValue;
         
@@ -1222,6 +1223,11 @@ function fieldValueCallbackIssueI2P_R2P(response) {
             User: UserName,
             LoginId: LoginId,
             vtype: 6656,
+            //CompanyId: logDetails.CompanyId,
+            //SessionId: logDetails.SessionId,
+            //User: logDetails.UserName,
+            //LoginId: logDetails.LoginId,
+            //vtype: logDetails.iVoucherType,
             docNo: docNo,
             iVariantID: VariantID,
             BodyData: bodyData
@@ -1253,17 +1259,14 @@ function fieldValueCallbackIssueI2P_R2P(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
-//Generalized AfterSave PPCPlan_PPSfgReqd Add By Shaikh Azhar 09-03-2023 
+//#endregion
+
+//#region Start of Generalized AfterSave PPCPlan_PPSfgReqd Add By Shaikh Azhar 09-03-2023 
 function PPCPlan_PPSfgReqd(loginDetails, rowIndex) {
     debugger;
     requestId = 0;
-    requestsProcessed = [];
-    CID = loginDetails.CompanyId;
-    SessID = loginDetails.SessionId;
-    UserName = loginDetails.UserName;
-    LoginId = loginDetails.LoginId;
-    
-    Focus8WAPI.getFieldValue("fieldValueCallbackIssuePPCPlan_PPSfgReqd", ["DocNo", "Date"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
+    requestsProcessed = [];    
+    Focus8WAPI.getFieldValue("fieldValueCallbackIssuePPCPlan_PPSfgReqd", ["", "*"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
 
 }
 function fieldValueCallbackIssuePPCPlan_PPSfgReqd(response) {
@@ -1277,17 +1280,24 @@ function fieldValueCallbackIssuePPCPlan_PPSfgReqd(response) {
         debugger;
         logDetails = response.data[0];
 
-        docNo = response.data[0].FieldValue;
+        docNo = response.data[1].FieldValue;
 
         ////docDate = response.data[2].FieldValue;
 
 
         var data = {
-            CompanyId: CID,
-            SessionId: SessID,
-            User: UserName,
-            LoginId: LoginId,
-            vtype: 7946,
+            CompanyId: logDetails.CompanyId,
+            SessionId: logDetails.SessionId,
+            User: logDetails.UserName,
+            LoginId: logDetails.LoginId,
+            vtype: logDetails.iVoucherType,
+
+            //CompanyId: CID,
+            //SessionId: SessID,
+            //User: UserName,
+            //LoginId: LoginId,
+            ////vtype: 7948,
+            //vtype:vtype,
             docNo: docNo,
             BodyData: bodyData
 
@@ -1318,16 +1328,19 @@ function fieldValueCallbackIssuePPCPlan_PPSfgReqd(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
+
+//#region Start of Generalized AfterSave Production Order Master create
 function RelPO_POS(loginDetails, rowIndex) {
     debugger;
     requestId = 0;
     requestsProcessed = [];
-    CID = loginDetails.CompanyId;
-    SessID = loginDetails.SessionId;
-    UserName = loginDetails.UserName;
-    LoginId = loginDetails.LoginId;
+    //CID = loginDetails.CompanyId;
+    //SessID = loginDetails.SessionId;
+    //UserName = loginDetails.UserName;
+    //LoginId = loginDetails.LoginId;
 
-    Focus8WAPI.getFieldValue("fieldValueCallbackIssueRelPO_POS", ["DocNo", "Date"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
+    Focus8WAPI.getFieldValue("fieldValueCallbackIssueRelPO_POS", ["", "*"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
 
 }
 function fieldValueCallbackIssueRelPO_POS(response) {
@@ -1341,17 +1354,22 @@ function fieldValueCallbackIssueRelPO_POS(response) {
         debugger;
         logDetails = response.data[0];
 
-        docNo = response.data[0].FieldValue;
-
+        docNo = response.data[1].FieldValue;
+        
         ////docDate = response.data[2].FieldValue;
 
 
         var data = {
-            CompanyId: CID,
-            SessionId: SessID,
-            User: UserName,
-            LoginId: LoginId,
-            vtype: 7953,
+            CompanyId: logDetails.CompanyId,
+            SessionId: logDetails.SessionId,
+            User: logDetails.UserName,
+            LoginId: logDetails.LoginId,
+            vtype: logDetails.iVoucherType,
+            //CompanyId: CID,
+            //SessionId: SessID,
+            //User: UserName,
+            //LoginId: LoginId,
+            //vtype: 7950,
             docNo: docNo,
             BodyData: bodyData
 
@@ -1382,3 +1400,4 @@ function fieldValueCallbackIssueRelPO_POS(response) {
         console.log("fieldValueCallbacksupplierValidate", e.message)
     }
 }
+//#endregion
