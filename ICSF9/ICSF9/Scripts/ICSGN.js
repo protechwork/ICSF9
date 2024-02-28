@@ -1261,6 +1261,81 @@ function fieldValueCallbackIssueI2P_R2P(response) {
 }
 //#endregion
 
+
+//#region Start of Generalized AfterSave I2P_R2P Add By Rakesh Vishwakarma 27-02-2024 
+function UpdateI2P_R2P_Rej(loginDetails, rowIndex) {
+    //alert(loginDetails);	
+    debugger;
+    requestId = 0;
+    requestsProcessed = [];
+    CID = loginDetails.CompanyId;
+    SessID = loginDetails.SessionId;
+    UserName = loginDetails.UserName;
+    LoginId = loginDetails.LoginId;
+    //vtyp=logDetails.iVoucherType;
+    Focus8WAPI.getFieldValue("fieldValueCallbackIssueI2P_R2P_Rej", ["VariantID", "DocNo", "Date"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
+    //Focus8WAPI.getFieldValue("fieldValueCallbackIssueI2P_R2P", ["VariantID", "", "*"], Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false, requestId++);
+}
+function fieldValueCallbackIssueI2P_R2P_Rej(response) {
+    debugger;
+    try {
+
+        if (isRequestCompleted(response.iRequestId, requestsProcessed)) {
+            return;
+        }
+        requestsProcessed.push(response.iRequestId);
+        debugger;
+        //logDetails = response.data[0];
+        VariantID = response.data[0].FieldValue;
+        docNo = response.data[1].FieldValue;
+
+        ////docDate = response.data[2].FieldValue;
+
+
+        var data = {
+            CompanyId: CID,
+            SessionId: SessID,
+            User: UserName,
+            LoginId: LoginId,
+            vtype: 6656,
+            //CompanyId: logDetails.CompanyId,
+            //SessionId: logDetails.SessionId,
+            //User: logDetails.UserName,
+            //LoginId: logDetails.LoginId,
+            //vtype: logDetails.iVoucherType,
+            docNo: docNo,
+            iVariantID: VariantID,
+            BodyData: bodyData
+
+        };
+
+        console.log({ data })
+        $.ajax({
+            type: "POST",
+            url: "/ICSF9/Generalized_I2P_R2P/UpdateI2P_R2P_Rej",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            async: false,
+            success: function (r) {
+                debugger
+                res = JSON.stringify(r);
+                alert(r.data.message);
+                Focus8WAPI.continueModule(Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, true);
+            },
+            error: function (e) {
+                console.log(e.message)
+                Focus8WAPI.continueModule(Focus8WAPI.ENUMS.MODULE_TYPE.TRANSACTION, false);
+            }
+
+        });
+
+
+    } catch (e) {
+        console.log("fieldValueCallbacksupplierValidate", e.message)
+    }
+}
+//#endregion
+
 //#region Start of Generalized AfterSave PPCPlan_PPSfgReqd Add By Shaikh Azhar 09-03-2023 
 function PPCPlan_PPSfgReqd(loginDetails, rowIndex) {
     debugger;
